@@ -27,9 +27,11 @@ services:
   redis-master:
     container_name: "redis-master"
     image: redis:6.0-alpine
-    command: redis-server
+    command: redis-server --requirepass password1 --masterauth password1
     ports:
       - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=password1
     networks:
       custom_network:
         ipv4_address: 192.168.1.20
@@ -39,7 +41,7 @@ services:
     image: redis:6.0-alpine
     ports:
       - "6380:6379"
-    command: redis-server --slaveof redis-master 6379
+    command: redis-server --slaveof 192.168.1.20 6379 --masterauth password1 --requirepass password1
     depends_on:
       - redis-master
     networks:
@@ -51,7 +53,7 @@ services:
     image: redis:6.0-alpine
     ports:
       - "6381:6379"
-    command: redis-server --slaveof redis-master 6379
+    command: redis-server --slaveof 192.168.1.20 6379 --masterauth password1 --requirepass password1
     depends_on:
       - redis-master
     networks:
@@ -73,6 +75,8 @@ services:
     networks:
       custom_network:
         ipv4_address: 192.168.1.30
+    environment:
+      - SENTINEL_PASSWORD=password2
 
   redis-sentinel2:
     container_name: 'redis-sentinel2'
@@ -89,6 +93,8 @@ services:
     networks:
       custom_network:
         ipv4_address: 192.168.1.31
+    environment:
+      - SENTINEL_PASSWORD=password2
 
   redis-sentinel3:
     container_name: 'redis-sentinel3'
@@ -105,6 +111,8 @@ services:
     networks:
       custom_network:
         ipv4_address: 192.168.1.32
+    environment:
+      - SENTINEL_PASSWORD=password2
 
 networks:
   custom_network:
